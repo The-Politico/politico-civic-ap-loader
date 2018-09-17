@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[requires]
+python_version = "3.6"
+
+[packages]
+pytest = "*"
+"flake8" = "*"
+django = ">=2.0"
+djangorestframework = "*"
+"dj-database-url" = "*"
+"psycopg2" = "*"
+"aploader" = {path = "./..", editable = true}
+politico-civic-ap-loader = {editable = true, path = "./.."}
+politico-civic-election = "*"
+
+[dev-packages]
