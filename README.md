@@ -75,3 +75,21 @@ Want to not worry about it? Use the shortcut make command.
   $ cd example
   $ pipenv run python manage.py migrate
   ```
+
+4. Bootstrap initial data (this will take about 20 minutes)
+  
+  ```
+  $ pipenv run python manage.py bootstrap_loader
+  ```
+
+##### Getting results to S3
+
+```
+$ pipenv run python manage.py get_results <ELECTION_DATE> <LEVEL> --test
+```
+
+##### Reupload results to database
+
+```
+$ pipenv run python manage.py reup_to_db <ELECTION_DATE>
+```
