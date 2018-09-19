@@ -69,17 +69,24 @@ class Command(BaseCommand):
         self.output_dir = os.path.join(
             project_settings.BASE_DIR, app_settings.RESULTS_STATIC_DIR
         )
-        # prev_results = os.path.join(self.output_dir, "election-results")
-        # for f in os.listdir(prev_results):
-        #     f_path = os.path.join(prev_results, f)
 
-        #     try:
-        #         if os.path.isfile(f_path):
-        #             os.unlink(f_path)
-        #         elif os.path.isdir(f_path):
-        #             shutil.rmtree(f_path)
-        #     except Exception as e:
-        #         print(e)
+        prev_results = os.path.join(
+            self.output_dir, "election-results", self.level
+        )
+
+        if not os.path.exists(prev_results):
+            os.makedirs(prev_results)
+
+        for f in os.listdir(prev_results):
+            f_path = os.path.join(prev_results, f)
+
+            try:
+                if os.path.isfile(f_path):
+                    os.unlink(f_path)
+                elif os.path.isdir(f_path):
+                    shutil.rmtree(f_path)
+            except Exception as e:
+                print(e)
 
         script_args = [
             "bash",

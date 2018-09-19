@@ -48,7 +48,7 @@ echo "Starting filter: `date`"
 
 case $BASH_VERSION in ''|[123].*|4.[01].*) echo "ERROR: Bash 4.2 required" >&2; exit 1;; esac
 
-input_file="master.json"
+input_file="master_$filename.json"
 [[ -s $input_file ]] || { echo "master.json not a valid file" >&2; exit 1; }
 
 jq_split_script='
@@ -69,16 +69,16 @@ while IFS=$'\t' read -r state office data; do
   if [[ ! ${out_fds[$state]} ]]; then
     slug="$(echo -n "${state}" | sed -e 's/[^[:alnum:]]/-/g' \
     | tr -s '-' | tr A-Z a-z)"
-    mkdir -p $OUTPUT/election-results/$slug
-    exec {new_fd}> >(jq -n '[inputs]' >"$OUTPUT/election-results/$slug/$filename.json")
+    mkdir -p $OUTPUT/election-results/$results_filter/$slug
+    exec {new_fd}> >(jq -n '[inputs]' >"$OUTPUT/election-results/$results_filter/$slug/$filename.json")
     out_fds[$state]=$new_fd
   fi
   # If we don't already have a writer for the current state, start one.
   if [[ ! ${out_fds[$office]} ]]; then
     slug="$(echo -n "${office}" | sed -e 's/[^[:alnum:]]/-/g' \
     | tr -s '-' | tr A-Z a-z)"
-    mkdir -p $OUTPUT/election-results/$slug
-    exec {new_fd}> >(jq -n '[inputs]' >"$OUTPUT/election-results/$slug/$filename.json")
+    mkdir -p $OUTPUT/election-results/$results_filter/$slug
+    exec {new_fd}> >(jq -n '[inputs]' >"$OUTPUT/election-results/$results_filter/$slug/$filename.json")
     out_fds[$office]=$new_fd
   fi
   if [[ ! ${out_fds[${state}-${office}]} ]]; then
@@ -86,8 +86,8 @@ while IFS=$'\t' read -r state office data; do
     | tr -s '-' | tr A-Z a-z)"
     officeslug="$(echo -n "${office}" | sed -e 's/[^[:alnum:]]/-/g' \
     | tr -s '-' | tr A-Z a-z)"
-    mkdir -p $OUTPUT/election-results/$stateslug/$officeslug
-    exec {new_fd}> >(jq -n '[inputs]' >"$OUTPUT/election-results/$stateslug/$officeslug/$filename.json")
+    mkdir -p $OUTPUT/election-results/$results_filter/$stateslug/$officeslug
+    exec {new_fd}> >(jq -n '[inputs]' >"$OUTPUT/election-results/$results_filter/$stateslug/$officeslug/$filename.json")
     out_fds[${state}-${office}]=$new_fd
   fi
   # Regardless, send the data to the FD we have for this state
@@ -104,8 +104,8 @@ done
 echo "Filter finished: `date`"
 
 # deploy to s3
-# if [ $BUCKET ] ; then
-#   aws s3 cp ${OUTPUT}/election-results/ s3://${BUCKET}/election-results/ --recursive --acl "public-read" --cache-control "max-age=5"
-# fi
+if [ $BUCKET ] ; then
+  aws s3 cp ${OUTPUT}/election-results/$results_filter s3://${BUCKET}/election-results/ --recursive --acl "public-read" --cache-control "max-age=5"
+fi
 
 cp master_$filename.json reup_$filename.json
