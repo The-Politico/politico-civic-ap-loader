@@ -1,7 +1,9 @@
-from django.urls import path
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 
-from .views import Home
+from .viewsets import APElectionMetaViewSet
 
-urlpatterns = [
-    path('', Home.as_view(), name='aploader-home'),
-]
+router = DefaultRouter()
+router.register(r"ap-election-meta", APElectionMetaViewSet)
+
+urlpatterns = [path("api/", include(router.urls))]
