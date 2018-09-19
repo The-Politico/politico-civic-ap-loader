@@ -14,30 +14,46 @@ class Settings:
 
 Settings.AUTH_DECORATOR = getattr(
     project_settings,
-    'APLOADER_AUTH_DECORATOR',
-    'django.contrib.auth.decorators.login_required'
+    "APLOADER_AUTH_DECORATOR",
+    "django.contrib.auth.decorators.login_required",
 )
 
 Settings.SECRET_KEY = getattr(
-    project_settings, 'APLOADER_SECRET_KEY', 'a-bad-secret-key')
+    project_settings, "APLOADER_SECRET_KEY", "a-bad-secret-key"
+)
 
 Settings.AWS_ACCESS_KEY_ID = getattr(
-    project_settings, 'APLOADER_AWS_ACCESS_KEY_ID', None)
+    project_settings, "APLOADER_AWS_ACCESS_KEY_ID", None
+)
 
 Settings.AWS_SECRET_ACCESS_KEY = getattr(
-    project_settings, 'APLOADER_AWS_SECRET_ACCESS_KEY', None)
+    project_settings, "APLOADER_AWS_SECRET_ACCESS_KEY", None
+)
 
-Settings.AWS_REGION = getattr(
-    project_settings, 'APLOADER_AWS_REGION', None)
+Settings.AWS_REGION = getattr(project_settings, "APLOADER_AWS_REGION", None)
 
 Settings.AWS_S3_BUCKET = getattr(
-    project_settings, 'APLOADER_AWS_S3_BUCKET', None)
+    project_settings, "APLOADER_AWS_S3_BUCKET", None
+)
 
 Settings.CLOUDFRONT_ALTERNATE_DOMAIN = getattr(
-    project_settings, 'APLOADER_CLOUDFRONT_ALTERNATE_DOMAIN', None)
+    project_settings, "APLOADER_CLOUDFRONT_ALTERNATE_DOMAIN", None
+)
 
 Settings.S3_UPLOAD_ROOT = getattr(
-    project_settings, 'APLOADER_S3_UPLOAD_ROOT', 'uploads/aploader')
+    project_settings, "APLOADER_S3_UPLOAD_ROOT", "uploads/aploader"
+)
 
+Settings.RESULTS_STATIC_DIR = getattr(
+    project_settings, "APLOADER_RESULTS_STATIC_DIR", "static_results"
+)
+
+Settings.RESULTS_DAEMON_INTERVAL = getattr(
+    project_settings, "ELECTIONNIGHT_RESULTS_DAEMON_INTERVAL", 30
+)
+
+Settings.DATABASE_UPLOAD_DAEMON_INTERVAL = getattr(
+    project_settings, "ELECTIONNIGHT_DATABASE_UPLOAD_DAEMON_INTERVAL", 60
+)
 
 settings = Settings

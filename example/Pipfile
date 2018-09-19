@@ -16,5 +16,10 @@ djangorestframework = "*"
 "aploader" = {path = "./..", editable = true}
 politico-civic-ap-loader = {editable = true, path = "./.."}
 politico-civic-election = "*"
+politico-civic-vote = "*"
+politico-civic-almanac = "*"
+elex = "*"
+slacker = "*"
+python-twitter = "*"
 
 [dev-packages]

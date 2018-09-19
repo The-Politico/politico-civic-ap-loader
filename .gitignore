@@ -150,3 +150,6 @@ venv.bak/
 
 # Temporary Files
 tmp/
+static_results
+example/*.json
+example/*.csv
