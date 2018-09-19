@@ -1,4 +1,3 @@
 include LICENSE
 include README.md
-recursive-include aploader/static *
-recursive-include aploader/templates *
+recursive-include aploader/bin *
