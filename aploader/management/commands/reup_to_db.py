@@ -12,7 +12,6 @@ from aploader.celery import (
 from aploader.conf import settings as app_settings
 from aploader.models import APElectionMeta
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from election.models import Candidate, CandidateElection
 from geography.models import Division, DivisionLevel
