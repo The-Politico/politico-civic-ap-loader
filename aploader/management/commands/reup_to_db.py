@@ -4,7 +4,11 @@ from datetime import datetime
 from time import sleep
 
 from almanac.models import ElectionEvent
-from aploader.celery import call_race_in_slack, call_race_on_twitter
+from aploader.celery import (
+    call_race_in_slack,
+    call_race_on_twitter,
+    bake_notifications,
+)
 from aploader.conf import settings as app_settings
 from aploader.models import APElectionMeta
 from django.core.exceptions import ObjectDoesNotExist
@@ -223,6 +227,7 @@ class Command(BaseCommand):
                 }
                 call_race_in_slack.delay(payload)
                 call_race_on_twitter.delay(payload)
+                self.calls.append(payload)
 
         votes.update(**vote_update)
 
@@ -234,19 +239,17 @@ class Command(BaseCommand):
         NO_BOTS = options["no_bots"]
         INTERVAL = app_settings.DATABASE_UPLOAD_DAEMON_INTERVAL
 
-        i = 1
         while True:
             results = self.load_results(LEVEL)
+            self.calls = []
 
             for result in tqdm(results):
                 self.process_result(
                     result, TABULATED, NO_BOTS, PASSED_ELECTION_DATE
                 )
 
-            if i % 5 == 0:
-                call_command("bake_elections", PASSED_ELECTION_DATE)
-
-            i += 1
+            if len(self.calls) > 0:
+                bake_notifications(self.calls)
 
             if RUN_ONCE:
                 print("Run once specified, exiting.")
