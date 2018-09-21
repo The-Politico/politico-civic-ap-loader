@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="utf-8">
+    <title>Race Ratings Editor</title>
+    <link rel="stylesheet" type="text/css" href="https://www.politico.com/interactives/cdn/fonts/battletoads/icons/politico-battletoads-icons.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    {% block css %}
+    <link rel="stylesheet" href="{% static 'raceratings/css/main-admin-app.css' %}">
+    {% endblock %}
+    <!--Typekit-->
+    <!-- DIN 2014 -->
+    <link rel="stylesheet" href="https://use.typekit.net/dsx2uhv.css">
+    <!-- Jubilat include -->
+    {% comment %} <link rel="stylesheet" href="https://use.typekit.net/bvr3gvp.css"> {% endcomment %}
+    <script>try { Typekit.load({ async: true }); } catch (e) { }</script>
+    <!-- end -->
+  </head>
+<body>
+  {% block content %}
+  {% endblock %}
+</body>
+{% block javascript %}
+{% if env != 'production' %}
+<script type="text/javascript" src="{% static 'aploader/js/main-admin-app.js' %}"></script>
+{% endif %}
+{% endblock %}
+</html>

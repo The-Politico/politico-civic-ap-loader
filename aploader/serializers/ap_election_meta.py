@@ -41,16 +41,23 @@ class CandidateSerializer(serializers.ModelSerializer):
 class ElectionSerializer(serializers.ModelSerializer):
     office = serializers.SerializerMethodField()
     candidates = serializers.SerializerMethodField()
+    body = serializers.SerializerMethodField()
 
     def get_office(self, obj):
         return obj.race.office.label
+
+    def get_body(self, obj):
+        if obj.race.office.body:
+            return obj.race.office.body.slug
+        else:
+            return "governor"
 
     def get_candidates(self, obj):
         return CandidateSerializer(obj.get_candidates(), many=True).data
 
     class Meta:
         model = Election
-        fields = ("office", "candidates")
+        fields = ("office", "body", "candidates")
 
 
 class APElectionMetaSerializer(serializers.ModelSerializer):
