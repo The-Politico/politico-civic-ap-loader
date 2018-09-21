@@ -8,8 +8,18 @@
   }
 }
 
+.table {
+  td, th {
+    border-top: none;
+  }
+}
+
 .candidate {
-  margin: 20px 0;
+  margin: 1.5rem 0;
+
+  &.winner {
+    font-weight: bold;
+  }
 
   td {
     vertical-align: middle;
