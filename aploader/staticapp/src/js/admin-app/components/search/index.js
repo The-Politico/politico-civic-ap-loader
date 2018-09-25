@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
 import { states } from './utils';
+import { fetchStateData } from '../../stores/races/api';
 
 import './styles.scss';
 
@@ -12,7 +13,6 @@ class Search extends React.Component {
   }
 
   onChange(selection) {
-    console.log(this.props.actions);
     this.props.actions.selectState(selection.value);
   }
 

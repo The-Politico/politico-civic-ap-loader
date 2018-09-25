@@ -48,7 +48,7 @@ class Candidate extends React.Component {
   }
 
   onCallClick(e) {
-    const { actions, electionID, c } = this.props;
+    const { actions, electionID, c, state } = this.props;
     const { buttonAction } = this.state;
 
     const postBody = {

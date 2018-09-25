@@ -30,6 +30,7 @@ class App extends React.Component {
                 race={race}
                 key={race.ap_election_id} 
                 actions={this.props.actions}
+                state={this.props.state}
               />
             ))}
           </div>
@@ -42,6 +43,7 @@ class App extends React.Component {
 const mapStateToProps = state => {
   return {
     races: getRaces(state.races),
+    state: state.search.state,
   }
 };
 

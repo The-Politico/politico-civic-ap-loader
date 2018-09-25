@@ -13,7 +13,7 @@ const headers = {
 
 class Race extends React.Component {
   render() {
-    const { race, actions } = this.props;
+    const { race, actions, state } = this.props;
 
     return (
       <div className='race'>
@@ -33,6 +33,7 @@ class Race extends React.Component {
           actions={actions}
           called={race.called}
           overriding={race.override_ap_call}
+          state={state}
         />
         <p className="precincts">
           {race.precincts_reporting} of {race.precincts_total} precincts reporting ({Math.round(race.precincts_reporting_pct) * 100}%)

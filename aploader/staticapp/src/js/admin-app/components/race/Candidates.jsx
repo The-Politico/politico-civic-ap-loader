@@ -5,7 +5,7 @@ import Candidate from './Candidate';
 
 class Candidates extends React.Component {
   render() {
-    const { candidates, electionID, actions, called, overriding } = this.props;
+    const { candidates, electionID, actions, called, overriding, state } = this.props;
     const sorted = sortBy(candidates, c => c.votes.count).reverse();
 
     return (
@@ -28,6 +28,7 @@ class Candidates extends React.Component {
               actions={actions}
               called={called}
               overriding={overriding}
+              state={state}
             />
           ))}
         </tbody>

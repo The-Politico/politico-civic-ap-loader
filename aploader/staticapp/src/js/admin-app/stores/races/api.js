@@ -21,6 +21,7 @@ function getParameterByName(name, url) {
 const GET = assign({}, headers, { method: 'GET' });
 
 function createRaces (races, dispatch) {
+  console.log('hello')
   dispatch(actions.createRaces(races));
 }
 
