@@ -24,8 +24,8 @@ function createRaces (races, dispatch) {
   dispatch(actions.createRaces(races));
 }
 
-export const fetchInitialData = () =>
-  dispatch => fetch(`../api/ap-election-meta/${getParameterByName('state')}`, GET)
+export const fetchStateData = state =>
+  dispatch => fetch(`../api/ap-election-meta/${state}`, GET)
     .then(response => response.json())
     .then(data => Promise.all([
       createRaces(data, dispatch)

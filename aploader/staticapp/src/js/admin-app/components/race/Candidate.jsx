@@ -1,8 +1,6 @@
 import React from 'react';
 import { Sketch } from 'politico-style';
 import Cookies from 'js-cookie';
-import getParameterByName from '../../utils/getParameterByName';
-
 const { Button } = Sketch;
 
 const headers = {
@@ -78,7 +76,7 @@ class Candidate extends React.Component {
       postBody['called'] = false;
     }
 
-    fetch(`../api/ap-election-meta/${getParameterByName('state')}/`, {
+    fetch(`../api/ap-election-meta/${state}/`, {
       method: 'POST',
       headers,
       body: JSON.stringify(postBody)

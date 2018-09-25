@@ -3,8 +3,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { getRaces } from '../stores/races/reducers';
 import { Sketch } from 'politico-style';
+import Search from './search';
 import Race from './race';
-import * as actions from '../stores/races/actions';
+import * as raceActions from '../stores/races/actions';
+import * as searchActions from '../stores/search/actions';
+import assign from 'lodash/assign';
 
 const { Nav } = Sketch;
 
@@ -18,6 +21,9 @@ class App extends React.Component {
           appLink='civic.politicoapps.com'
         />
         <div className='container'>
+          <div className='search'>
+            <Search actions={this.props.actions}/>
+          </div>
           <div className='races'>
             {this.props.races.map(race => (
               <Race 
@@ -40,7 +46,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators(actions, dispatch),
+  actions: bindActionCreators(assign({}, raceActions, searchActions), dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
