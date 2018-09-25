@@ -1,15 +1,57 @@
 @import "~adminTheme/main.scss";
 
 .races {
-  padding-top: 3rem;
+  .race {
+    margin: 4em 0;
+  }
+
+  span.override {
+    padding: 0 5px;
+    margin-left: 10px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    background-color: #AC0825;
+    color: white;
+    position: relative;
+    top: -3px;
+
+    &.outline {
+      background-color: white;
+      border: 1px solid #AC0825;
+      color: #AC0825;
+
+      &:hover {
+        color: white;
+        background-color: #AC0825;
+      }
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    .undo {
+      font-size: 1.1rem;
+      vertical-align: middle;
+    }
+  }
 
   h3 {
     margin-bottom: 0.25rem;
   }
+
+  p.precincts {
+    font-size: 0.85rem;
+    margin-left: 10px;
+    font-weight: normal;
+    color: #999;
+    font-family: $din;
+  }
 }
 
 .table {
-  td, th {
+  margin-bottom: 0;
+  th {
     border-top: none;
   }
 }

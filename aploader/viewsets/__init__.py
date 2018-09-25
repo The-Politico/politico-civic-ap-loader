@@ -1,2 +1,2 @@
 # flake8: noqa
-from .ap_election_meta import APElectionMetaViewSet
+from .ap_election_meta import APElectionMetaList
