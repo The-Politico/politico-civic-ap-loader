@@ -10,13 +10,16 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 module.exports = {
   resolve: {
     extensions: ['*', '.js', '.jsx', '.json'],
+    alias: {
+      adminTheme: path.resolve(__dirname, 'src/scss/theme'),
+    },
   },
   entry: _.zipObject(
     glob.sync('./src/js/main-*.js*').map(f => path.basename(f, path.extname(f))),
     glob.sync('./src/js/main-*.js*'),
   ),
   output: {
-    path: path.resolve(__dirname, '../static/raceratings'),
+    path: path.resolve(__dirname, '../static/aploader'),
     filename: 'js/[name].js',
   },
   module: {
@@ -72,8 +75,5 @@ module.exports = {
     new OptimizeCssAssetsPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
     new UglifyJSPlugin(),
-    new webpack.ProvidePlugin({
-      fetch: 'imports-loader?this=>global!exports-loader?global.fetch!whatwg-fetch',
-    }),
   ],
 };
