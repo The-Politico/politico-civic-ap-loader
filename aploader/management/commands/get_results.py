@@ -13,7 +13,7 @@ from aploader.conf import settings as app_settings
 class Command(BaseCommand):
     help = "Run the results processing script"
 
-    def main(self, script_args, run_once):
+    def main(self, script_args, deploy_script_args, run_once):
         results_start = 0
         i = 0
 
@@ -41,6 +41,7 @@ class Command(BaseCommand):
                         sys.exit(0)
 
                 subprocess.run(script_args)
+                subprocess.run(deploy_script_args)
 
             if run_once:
                 print("run once specified, exiting")
@@ -65,6 +66,7 @@ class Command(BaseCommand):
 
         cmd_path = os.path.dirname(os.path.realpath(__file__))
         bash_script = os.path.join(cmd_path, "../../bin/results.sh")
+        deploy_script = os.path.join(cmd_path, "../../bin/deploy.sh")
 
         self.output_dir = os.path.join(
             project_settings.BASE_DIR, app_settings.RESULTS_STATIC_DIR
@@ -91,8 +93,6 @@ class Command(BaseCommand):
         script_args = [
             "bash",
             bash_script,
-            "-b",
-            app_settings.AWS_S3_BUCKET,
             "-d",
             self.election_date,
             "-o",
@@ -107,4 +107,15 @@ class Command(BaseCommand):
         if options["zeroes"]:
             script_args.extend(["-z"])
 
-        self.main(script_args, options["run_once"])
+        deploy_script_args = [
+            "bash",
+            deploy_script,
+            "-b",
+            app_settings.AWS_S3_BUCKET,
+            "-l",
+            self.level,
+            "-o",
+            self.output_dir,
+        ]
+
+        self.main(script_args, deploy_script_args, options["run_once"])

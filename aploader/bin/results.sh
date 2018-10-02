@@ -5,7 +5,6 @@ while getopts b:d:f:l:o:zt option
 do
   case "${option}"
     in
-    b) BUCKET=${OPTARG};;
     d) DATE=${OPTARG};;
     f) FILE=${OPTARG};;
     l) LEVEL=${OPTARG};;
@@ -100,6 +99,7 @@ while IFS=$'\t' read -r state office data; do
 
     out_fds[${state}-${officename}]=$new_fd
   fi
+
   # Regardless, send the data to the FDs we have for this row
   printf '%s\n' "$data" >&${out_fds[$state]}
   printf '%s\n' "$data" >&${out_fds[$officename]}
@@ -112,10 +112,5 @@ for fd in "${!out_fds[@]}"; do
 done
 
 echo "Filter finished: `date`"
-
-# deploy to s3
-if [ $BUCKET ] ; then
-  aws s3 cp ${OUTPUT}/election-results/$results_filter s3://${BUCKET}/election-results/ --recursive --acl "public-read" --cache-control "max-age=5"
-fi
 
 cp master_$filename.json reup_$filename.json
