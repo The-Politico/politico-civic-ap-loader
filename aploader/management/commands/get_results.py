@@ -41,6 +41,7 @@ class Command(BaseCommand):
                         sys.exit(0)
 
                 subprocess.run(script_args)
+                sleep(2)
                 subprocess.run(deploy_script_args)
 
             if run_once:
