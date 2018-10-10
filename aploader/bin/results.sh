@@ -26,10 +26,12 @@ if [ $LEVEL == "state" ]
 fi
 
 
-# if [ $TEST ] ; then
-#   export ELEX_RECORDING="flat"
-#   export ELEX_RECORDING_DIR="${OUTPUT}/recordings/${DATE}"
-# fi
+if [ $TEST ] ; then
+  today=$(date +%Y-%m-%d)
+
+  export ELEX_RECORDING="flat"
+  export ELEX_RECORDING_DIR="${OUTPUT}/recordings/${DATE}/${today}/${filename}"
+fi
 
 # grab elex results for everything
 if [ $FILE ]
