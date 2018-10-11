@@ -1,3 +1,4 @@
+import math
 import os
 import shutil
 import subprocess
@@ -48,10 +49,12 @@ class Command(BaseCommand):
             iteration_speed = 1
 
             if interval <= 10 and self.level == "state":
-                iteration_speed = 10 % interval
+                iteration_speed = math.ceil(10 / interval)
+                interval = 10
 
             if interval <= 30 and self.level == "county":
-                iteration_speed = 30 % interval
+                iteration_speed = math.ceil(30 / interval)
+                interval = 30
 
         else:
             interval = app_settings.RESULTS_DAEMON_INTERVAL

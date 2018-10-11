@@ -36,7 +36,7 @@ fi
 # grab elex results for everything
 if [ $FILE ]
   then
-    elex results ${DATE} ${TEST} ${ZEROES} --national-only -o json -d ${FILE} > master.json
+    elex results ${DATE} ${TEST} ${ZEROES} --national-only -o json -d ${FILE} > master_$filename.json
 
   else
     elex results ${DATE} ${TEST} ${ZEROES} --national-only --results-level ${results_level} -o json > master_$filename.json
