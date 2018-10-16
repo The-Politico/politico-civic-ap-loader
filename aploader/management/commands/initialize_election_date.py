@@ -211,7 +211,6 @@ class Command(BaseCommand):
         person, created = entity.Person.objects.get_or_create(
             first_name=row["first"], last_name=row["last"]
         )
-        print(created)
 
         return person
 
