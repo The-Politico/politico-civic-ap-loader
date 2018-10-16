@@ -211,6 +211,7 @@ class Command(BaseCommand):
         person, created = entity.Person.objects.get_or_create(
             first_name=row["first"], last_name=row["last"]
         )
+        print(created)
 
         return person
 
@@ -359,4 +360,8 @@ class Command(BaseCommand):
                     # TODO: Check this with Tyler
                     if not race.get("level", None):
                         continue
+
+                    if race["is_ballot_measure"]:
+                        continue
+
                     self.process_row(race)

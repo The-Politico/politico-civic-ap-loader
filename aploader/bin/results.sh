@@ -54,7 +54,7 @@ input_file="master_$filename.json"
 
 jq_split_script='
 def relevantContentOnly:
-  { fipscode, level, polid, polnum, precinctsreporting, precinctsreportingpct, precinctstotal, raceid, runoff, statepostal, votecount, votepct, winner };
+  { fipscode, level, party, polid, polnum, precinctsreporting, precinctsreportingpct, precinctstotal, raceid, runoff, seatnum, statepostal, votecount, votepct, winner };
 
 if (.level != $level) then empty else (
   [.statename, .officeid, (relevantContentOnly | tojson)] | @tsv
