@@ -110,8 +110,9 @@ class Command(BaseCommand):
             CANDIDATE_ID = "{0}-{1}".format(id_components[0], CANDIDATE_ID)
 
         try:
-            candidate = Candidate.objects.get(
-                race=ap_meta.election.race, ap_candidate_id=CANDIDATE_ID
+            candidate_election = CandidateElection.objects.get(
+                election=ap_meta.election,
+                candidate__ap_candidate_id=CANDIDATE_ID,
             )
         except ObjectDoesNotExist:
             print(
@@ -121,9 +122,7 @@ class Command(BaseCommand):
             )
             return
 
-        candidate_election = CandidateElection.objects.get(
-            election=ap_meta.election, candidate=candidate
-        )
+        candidate = candidate_election.candidate
 
         division = Division.objects.get(
             level__name=DivisionLevel.STATE,
