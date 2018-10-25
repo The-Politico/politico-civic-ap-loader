@@ -21,5 +21,7 @@ politico-civic-almanac = "*"
 elex = "*"
 slacker = "*"
 python-twitter = "*"
+politico-civic-race-ratings = "*"
+politico-civic-government = "==0.1.2"
 
 [dev-packages]

@@ -54,7 +54,7 @@ input_file="master_$filename.json"
 
 jq_split_script='
 def relevantContentOnly:
-  { fipscode, level, party, polid, polnum, precinctsreporting, precinctsreportingpct, precinctstotal, raceid, runoff, seatnum, statepostal, votecount, votepct, winner };
+  { fipscode, level, officeid, party, polid, polnum, precinctsreporting, precinctsreportingpct, precinctstotal, raceid, runoff, seatnum, statepostal, votecount, votepct, winner };
 
 if (.level != $level) then empty else (
   [.statename, .officeid, (relevantContentOnly | tojson)] | @tsv
@@ -72,6 +72,8 @@ while IFS=$'\t' read -r state office data; do
     officename='house'
   elif [ $office == 'S' ]; then
     officename='senate'
+  elif [ $office == 'I' ]; then
+    continue
   fi
 
   # If we don't already have a writer for the current state, start one.

@@ -4,11 +4,7 @@ from datetime import datetime
 from time import sleep
 
 from almanac.models import ElectionEvent
-from aploader.celery import (
-    call_race_in_slack,
-    call_race_on_twitter,
-    bake_notifications,
-)
+from aploader.celery import call_race_in_slack, call_race_on_twitter, bake_bop
 from aploader.conf import settings as app_settings
 from aploader.models import APElectionMeta
 from django.core.exceptions import ObjectDoesNotExist
@@ -37,6 +33,59 @@ class Command(BaseCommand):
                 sleep(5)
         return data
 
+    def get_current_party(self, race):
+        historical_results = race.dataset.all()[0].data["historicalResults"][
+            "seat"
+        ]
+
+        if not race.office.body:
+            return None
+
+        if race.office.body.slug == "house":
+            last_election_year = "2016"
+        elif race.office.body.slug == "senate" and not race.special:
+            last_election_year = "2012"
+        elif race.office.body.slug == "senate" and race.special:
+            last_election_year = "2014"
+
+        last_result = next(
+            result
+            for result in historical_results
+            if result["year"] == last_election_year
+        )
+
+        # bernie and angus caucus with dems
+        if (
+            race.office.body.slug == "senate"
+            and race.office.division.slug in ["vermont", "maine"]
+        ):
+            return "dem"
+
+        dem = last_result.get("dem")
+        gop = last_result.get("gop")
+
+        if not gop:
+            return "dem"
+        if not dem:
+            return "gop"
+
+        if dem["votes"] > gop["votes"]:
+            return "dem"
+
+        if gop["votes"] > dem["votes"]:
+            return "gop"
+
+    def calculate_undecideds(self):
+        house = self.bop["house"]
+        house["undecided"] = 435 - (
+            house["dem"]["total"] + house["gop"]["total"]
+        )
+
+        senate = self.bop["senate"]
+        senate["undecided"] = 100 - (
+            senate["dem"]["total"] + senate["gop"]["total"]
+        )
+
     def deconstruct_result(self, result):
         keys = [
             "id",
@@ -57,6 +106,7 @@ class Command(BaseCommand):
             "precinctsreporting",
             "precinctsreportingpct",
             "precinctstotal",
+            "party",
         ]
         return [result[key] for key in keys]
 
@@ -85,6 +135,7 @@ class Command(BaseCommand):
             PRECINCTS_REPORTING,
             PRECINCTS_REPORTING_PERCENT,
             PRECINCTS_TOTAL,
+            PARTY,
         ) = self.deconstruct_result(result)
 
         # Skip ballot measures on non-state-level results
@@ -117,7 +168,7 @@ class Command(BaseCommand):
         except ObjectDoesNotExist:
             print(
                 "No Candidate found for {0} {1} {2}".format(
-                    LAST_NAME, OFFICE_NAME, REPORTING_UNIT
+                    LAST_NAME, OFFICE_NAME, PARTY
                 )
             )
             return
@@ -223,11 +274,38 @@ class Command(BaseCommand):
                     "special_election": "Special" in RACE_TYPE,
                     "page_url": url,
                 }
-                call_race_in_slack.delay(payload)
-                call_race_on_twitter.delay(payload)
-                self.calls.append(payload)
+                # call_race_in_slack.delay(payload)
+                # call_race_on_twitter.delay(payload)
+                # self.calls.append(payload)
 
         votes.update(**vote_update)
+
+        if OFFICE_NAME == "U.S. House":
+            bop_body = self.bop["house"]
+        elif OFFICE_NAME == "U.S. Senate":
+            bop_body = self.bop["senate"]
+        else:
+            return
+
+        if not PARTY:
+            return
+
+        if WINNER:
+            party_slug = PARTY.lower()
+            incumbent = self.get_current_party(ap_meta.election.race)
+
+            if PARTY not in ["Dem", "GOP"]:
+                if (
+                    STATE_POSTAL in ["VT", "ME"]
+                    and OFFICE_NAME == "U.S. Senate"
+                ):
+                    bop_body["dem"]["total"] += 1
+                else:
+                    bop_body["other"]["total"] += 1
+            else:
+                bop_body[party_slug]["total"] += 1
+                if party_slug != incumbent:
+                    bop_body[party_slug]["flips"] += 1
 
     def main(self, options):
         TABULATED = options["tabulated"]
@@ -239,15 +317,30 @@ class Command(BaseCommand):
 
         while True:
             results = self.load_results(LEVEL)
-            self.calls = []
+            self.bop = {
+                "house": {
+                    "dem": {"total": 0, "flips": 0},
+                    "gop": {"total": 0, "flips": 0},
+                    "other": {"total": 0},
+                    "undecided": 0,
+                },
+                "senate": {
+                    "dem": {"total": 23, "flips": 0},
+                    "gop": {"total": 42, "flips": 0},
+                    "other": {"total": 0},
+                    "undecided": 0,
+                },
+            }
 
             for result in tqdm(results):
                 self.process_result(
                     result, TABULATED, NO_BOTS, PASSED_ELECTION_DATE
                 )
 
-            if len(self.calls) > 0:
-                bake_notifications(self.calls)
+            self.calculate_undecideds()
+
+            print(self.bop)
+            bake_bop(self.bop)
 
             if RUN_ONCE:
                 print("Run once specified, exiting.")
