@@ -1,9 +1,9 @@
 import time
 from argparse import Namespace
 
+from aploader.conf import settings as app_settings
 from celery import shared_task
 from django.conf import settings
-from aploader.conf import settings as app_settings
 from slacker import Slacker
 
 SLACK_TOKEN = getattr(settings, "CIVIC_SLACK_TOKEN", None)
@@ -24,7 +24,7 @@ def call_race_in_slack(payload):
     else:
         WINNING = "✓ *{}*".format(payload.candidate)
 
-    attachment_data = [
+    bot_attachment_data = [
         {
             "fallback": "🚨 Race called in *{}*".format(
                 payload.division.upper()
@@ -64,14 +64,14 @@ def call_race_in_slack(payload):
     client = get_client()
 
     if app_settings.AWS_S3_BUCKET == "interactives.politico.com":
-        channel = "#elections-bot"
+        bot_channel = "#elections-bot"
     else:
-        channel = "#elections-bot-stg"
+        bot_channel = "#elections-bot-stg"
 
     client.chat.post_message(
-        channel,
+        bot_channel,
         "",
-        attachments=attachment_data,
+        attachments=bot_attachment_data,
         as_user=False,
         username="Elections Bot",
     )
