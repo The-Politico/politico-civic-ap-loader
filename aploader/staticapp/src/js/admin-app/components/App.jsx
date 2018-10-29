@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { getRaces } from '../stores/races/reducers';
 import { Sketch } from 'politico-style';
+import Chambers from './chambers';
 import Search from './search';
 import Race from './race';
 import * as raceActions from '../stores/races/actions';
@@ -21,9 +22,8 @@ class App extends React.Component {
           appLink='civic.politicoapps.com'
         />
         <div className='container'>
-          <div className='search'>
-            <Search actions={this.props.actions}/>
-          </div>
+          <Chambers chamberCalls={this.props.chamberCalls} />
+          <Search actions={this.props.actions}/>
           <div className='races'>
             {this.props.races.map(race => (
               <Race 
@@ -42,6 +42,7 @@ class App extends React.Component {
 
 const mapStateToProps = state => {
   return {
+    chamberCalls: state.chamberCalls,
     races: getRaces(state.races),
     state: state.search.state,
   }

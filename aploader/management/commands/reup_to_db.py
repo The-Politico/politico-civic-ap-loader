@@ -6,7 +6,7 @@ from time import sleep
 from almanac.models import ElectionEvent
 from aploader.celery import call_race_in_slack, call_race_on_twitter, bake_bop
 from aploader.conf import settings as app_settings
-from aploader.models import APElectionMeta
+from aploader.models import APElectionMeta, ChamberCall
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 from election.models import Candidate, CandidateElection
@@ -85,6 +85,14 @@ class Command(BaseCommand):
         senate["undecided"] = 100 - (
             senate["dem"]["total"] + senate["gop"]["total"]
         )
+
+    def get_chamber_call(self, body):
+        chamber_call = ChamberCall.objects.get(body__slug=body)
+
+        if not chamber_call.party:
+            return None
+        else:
+            return chamber_call.party.ap_code.lower()
 
     def deconstruct_result(self, result):
         keys = [
@@ -323,12 +331,14 @@ class Command(BaseCommand):
                     "gop": {"total": 0, "flips": 0},
                     "other": {"total": 0},
                     "undecided": 0,
+                    "call": self.get_chamber_call("house"),
                 },
                 "senate": {
                     "dem": {"total": 23, "flips": 0},
                     "gop": {"total": 42, "flips": 0},
                     "other": {"total": 0},
                     "undecided": 0,
+                    "call": self.get_chamber_call("senate"),
                 },
             }
 

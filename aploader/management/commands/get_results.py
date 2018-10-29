@@ -1,3 +1,4 @@
+import logging
 import math
 import os
 import shutil
@@ -12,6 +13,11 @@ from django.conf import settings as project_settings
 from django.core.management.base import BaseCommand
 
 from aploader.conf import settings as app_settings
+
+LOG_FORMAT = "%(levelname)s:%(name)s:%(asctime)s: %(message)s"
+logging.basicConfig(format=LOG_FORMAT)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class Command(BaseCommand):
@@ -60,6 +66,7 @@ class Command(BaseCommand):
             interval = app_settings.RESULTS_DAEMON_INTERVAL
 
         while True:
+            logger("running while loop")
             now = time()
 
             if (now - results_start) > interval:

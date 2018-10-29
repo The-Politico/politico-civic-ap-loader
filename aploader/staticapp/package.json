@@ -41,6 +41,7 @@
     "postcss-loader": "latest",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
+    "react-posed-tritoggle": "git+ssh://git@github.com:The-Politico/react-posed-tritoggle",
     "react-redux": "^5.0.7",
     "react-select": "^2.0.0",
     "redux": "^4.0.0",
