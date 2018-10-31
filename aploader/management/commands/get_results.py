@@ -66,7 +66,7 @@ class Command(BaseCommand):
             interval = app_settings.RESULTS_DAEMON_INTERVAL
 
         while True:
-            logger("running while loop")
+            logger.info("running while loop")
             now = time()
 
             if (now - results_start) > interval:

@@ -284,7 +284,6 @@ class Command(BaseCommand):
                 }
                 # call_race_in_slack.delay(payload)
                 # call_race_on_twitter.delay(payload)
-                # self.calls.append(payload)
 
         votes.update(**vote_update)
 
