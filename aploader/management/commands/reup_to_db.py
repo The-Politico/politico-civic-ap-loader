@@ -203,6 +203,9 @@ class Command(BaseCommand):
             vote_update["winning"] = WINNER
             vote_update["runoff"] = RUNOFF
 
+            if WINNER:
+                ap_meta.called = True
+
         if ap_meta.precincts_reporting != PRECINCTS_REPORTING:
             ap_meta.precincts_reporting = PRECINCTS_REPORTING
             ap_meta.precincts_total = PRECINCTS_TOTAL
