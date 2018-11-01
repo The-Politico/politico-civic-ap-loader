@@ -1,17 +1,12 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [requires]
-
 python_version = "3.6"
 
-
 [packages]
-
 pytest = "*"
 "flake8" = "*"
 django = ">=2.0"
@@ -21,17 +16,15 @@ dj-database-url = "*"
 aploader = {path = "./..", editable = true}
 politico-civic-ap-loader = {editable = true, path = "./.."}
 politico-civic-election = "*"
-politico-civic-government = "*"
+politico-civic-government = "==0.1.2"
+politico-civic-race-ratings = "*"
 politico-civic-vote = "*"
 politico-civic-almanac = "*"
 elex = "*"
 slacker = "*"
 python-twitter = "*"
 slackclient = "*"
-politico-civic-race-ratings = "*"
 openpyxl = "*"
 csvkit = "*"
-politico-civic-race-ratings = "*"
-politico-civic-government = "==0.1.2"
 
 [dev-packages]
