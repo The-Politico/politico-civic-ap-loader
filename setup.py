@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="politico-civic-ap-loader",
-    version="0.3.0",
+    version="0.4.0",
     description="",
     url="https://github.com/The-Politico/politico-civic-ap-loader",
     author="POLITICO interactive news",
