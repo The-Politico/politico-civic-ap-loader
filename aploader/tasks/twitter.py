@@ -3,6 +3,7 @@ from argparse import Namespace
 from urllib.parse import urlencode
 
 import requests
+
 import twitter
 from celery import shared_task
 from django.conf import settings
@@ -13,6 +14,15 @@ ACCESS_TOKEN_KEY = getattr(settings, "CIVIC_TWITTER_ACCESS_TOKEN_KEY", None)
 ACCESS_TOKEN_SECRET = getattr(
     settings, "CIVIC_TWITTER_ACCESS_TOKEN_SECRET", None
 )
+
+
+def format_candidate_party(party):
+    lp = party.lower()
+    if lp == "gop":
+        return "R"
+    if lp == "dem":
+        return "D"
+    return "Ind"
 
 
 def get_screenshot(race_id, page_url):
@@ -39,6 +49,7 @@ def get_screenshot(race_id, page_url):
 def construct_status(
     party,
     candidate,
+    candidate_party,
     office,
     runoff,
     division_slug,
@@ -77,8 +88,17 @@ def construct_status(
         else:
             race_label = "race"
 
-    return "🚨 NEW CALL: {} {} {} for {}. {}".format(
-        candidate, winning_language, race_label, office, page_url
+    party_code = format_candidate_party(candidate_party)
+
+    if party_code == "D":
+        intro = "🔵"
+    elif party_code == "R":
+        intro = "🔴"
+    else:
+        intro = "🚨"
+
+    return intro + " {} ({}) {} {} for {}. \n\n{}".format(
+        candidate, party_code, winning_language, race_label, office, page_url
     )
 
 
@@ -86,11 +106,10 @@ def construct_status(
 def call_race_on_twitter(payload):
     payload = Namespace(**payload)
 
-    get_screenshot(payload.race_id, payload.page_url)
-
     status = construct_status(
         payload.primary_party,
         payload.candidate,
+        payload.candidate_party,
         payload.office,
         payload.runoff,
         payload.division_slug,
@@ -107,9 +126,14 @@ def call_race_on_twitter(payload):
         access_token_secret=ACCESS_TOKEN_SECRET,
     )
 
-    with open(
-        "{}/images/{}.png".format(settings.BASE_DIR, payload.race_id), "rb"
-    ) as f:
-        media_id = api.UploadMediaSimple(f)
+    try:
+        get_screenshot(payload.race_id, payload.page_url)
 
-    api.PostUpdate(status=status, media=[media_id])
+        with open(
+            "{}/images/{}.png".format(settings.BASE_DIR, payload.race_id), "rb"
+        ) as f:
+            media_id = api.UploadMediaSimple(f)
+
+        api.PostUpdate(status=status, media=[media_id])
+    except Exception:
+        api.PostUpdate(status=status)

@@ -27,6 +27,10 @@ politico-civic-almanac = "*"
 elex = "*"
 slacker = "*"
 python-twitter = "*"
+slackclient = "*"
+politico-civic-race-ratings = "*"
+openpyxl = "*"
+csvkit = "*"
 
 
 [dev-packages]

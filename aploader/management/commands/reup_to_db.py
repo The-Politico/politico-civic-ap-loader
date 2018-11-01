@@ -3,22 +3,21 @@ import sys
 from datetime import datetime
 from time import sleep
 
+from tqdm import tqdm
+
 from almanac.models import ElectionEvent
-from aploader.celery import (
-    call_race_in_slack,
-    call_race_on_twitter,
-    bake_notifications,
-)
+from aploader.celery import (bake_notifications, call_race_in_slack,
+                             call_race_in_slackchat, call_race_on_twitter)
 from aploader.conf import settings as app_settings
 from aploader.models import APElectionMeta
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
-from election.models import Candidate, CandidateElection
+from election.models import CandidateElection
 from geography.models import Division, DivisionLevel
-from tqdm import tqdm
 from vote.models import Votes
 
-from .utils.notifications.formatters import format_office_label
+from .utils.notifications.formatters import (format_office_label,
+                                             short_format_office_label)
 
 
 class Command(BaseCommand):
@@ -164,9 +163,9 @@ class Command(BaseCommand):
 
             if not (first.winning or first.runoff) and not no_bots:
                 if ap_meta.election.party:
-                    PARTY = ap_meta.election.party.label
+                    PRIMARY_PARTY = ap_meta.election.party.label
                 else:
-                    PARTY = None
+                    PRIMARY_PARTY = None
 
                 # construct page URL for payload
                 if app_settings.AWS_S3_BUCKET == "interactives.politico.com":
@@ -210,10 +209,14 @@ class Command(BaseCommand):
                     "office": format_office_label(
                         candidate.race.office, division.label
                     ),
+                    "office_short": short_format_office_label(
+                        candidate.race.office, division.label
+                    ),
                     "candidate": "{} {}".format(
                         candidate.person.first_name, candidate.person.last_name
                     ),
-                    "primary_party": PARTY,
+                    "candidate_party": candidate.party.ap_code,
+                    "primary_party": PRIMARY_PARTY,
                     "vote_percent": VOTE_PERCENT,
                     "vote_count": VOTE_COUNT,
                     "runoff": RUNOFF,
@@ -224,6 +227,7 @@ class Command(BaseCommand):
                     "page_url": url,
                 }
                 call_race_in_slack.delay(payload)
+                call_race_in_slackchat.delay(payload)
                 call_race_on_twitter.delay(payload)
                 self.calls.append(payload)
 

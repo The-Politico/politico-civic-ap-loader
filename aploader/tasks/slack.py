@@ -20,9 +20,13 @@ def call_race_in_slack(payload):
     payload = Namespace(**payload)
 
     if payload.runoff:
-        WINNING = "✓ *{}* (advances to a runoff)".format(payload.candidate)
+        WINNING = "✓ *{}* ({})(advances to a runoff)".format(
+            payload.candidate, payload.candidate_party
+        )
     else:
-        WINNING = "✓ *{}*".format(payload.candidate)
+        WINNING = "✓ *{}* ({})".format(
+            payload.candidate, payload.candidate_party
+        )
 
     bot_attachment_data = [
         {
@@ -34,7 +38,7 @@ def call_race_in_slack(payload):
                 payload.division.upper()
             ),
             "mrkdwn_in": ["fields"],
-            "author_name": "Election Bot",
+            "author_name": "Elections Bot",
             "author_icon": "https://pbs.twimg.com/profile_images/998954486205898753/gbb2psb__400x400.jpg",  # noqa
             "title": "Winner for {}".format(payload.office),
             "title_link": payload.page_url,
