@@ -39,8 +39,6 @@ class APElectionMetaList(APIView):
         if request.data.get("called") is not None:
             meta.called = request.data["called"]
 
-        meta.save()
-
         if (
             request.data.get("ap_candidate_id")
             and request.data.get("winner") is not None
@@ -63,5 +61,7 @@ class APElectionMetaList(APIView):
 
             votes.winning = request.data["winner"]
             votes.save()
+
+        meta.save()
 
         return Response(200)
