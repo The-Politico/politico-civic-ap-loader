@@ -18,11 +18,14 @@ class Search extends React.Component {
 
   render() {
     return(
-      <Select 
-        options={states}
-        onChange={this.onChange}
-        placeholder='Select a state'
-      />
+      <div className='search'>
+        <h2>Race calls</h2>
+        <Select 
+          options={states}
+          onChange={this.onChange}
+          placeholder='Select a state'
+        />
+      </div>
     )
   } 
 }

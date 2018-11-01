@@ -5,12 +5,6 @@ import getParameterByName from '../../utils/getParameterByName';
 
 import './styles.scss';
 
-const headers = {
-  'Access-Control-Allow-Origin': '*',
-  'Content-Type': 'application/json',
-  'X-CSRFToken': Cookies.get('csrftoken'),
-};
-
 class Race extends React.Component {
   render() {
     const { race, actions, state } = this.props;

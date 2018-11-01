@@ -1,4 +1,5 @@
 # flake8: noqa
+from aploader.tasks.bop import bake_bop
 from aploader.tasks.notifications import bake_notifications
 from aploader.tasks.slack import call_race_in_slack
 from aploader.tasks.slackchat import call_race_in_slackchat
