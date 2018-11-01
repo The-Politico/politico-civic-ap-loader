@@ -28,3 +28,26 @@ def format_office_label(office, division_label):
         # TODO: President
         return "governor in {}".format(division_label)
     return office.label
+
+
+def short_format_office_label(office, division_label):
+    """
+    Format the label for office into something we like for twitter.
+    """
+    if office.body:
+        if office.body.slug == "senate":
+            return "{} Senate".format(division_label)
+        else:
+            if office.division.code == "00":
+                return "{} at-large district".format(
+                    possessive_state(division_label)
+                )
+            else:
+                return "{} {} District".format(
+                    possessive_state(division_label),
+                    ordinal(office.division.code),
+                )
+    else:
+        # TODO: President
+        return "{} Governor".format(division_label)
+    return office.label

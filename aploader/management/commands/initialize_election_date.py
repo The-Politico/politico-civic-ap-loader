@@ -2,15 +2,16 @@ import collections
 import json
 import subprocess
 
+from tqdm import tqdm
+
 import election.models as election
 import entity.models as entity
 import geography.models as geography
 import government.models as government
 import vote.models as vote
-from django.core.management.base import BaseCommand
-from tqdm import tqdm
-
 from aploader.models import APElectionMeta
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -44,8 +45,10 @@ class Command(BaseCommand):
             kwargs["code"] = row["fipscode"]
         else:
             kwargs["name"] = name
-
-        return geography.Division.objects.get(**kwargs)
+        try:
+            return geography.Division.objects.get(**kwargs)
+        except ObjectDoesNotExist:
+            return None
 
     def get_office(self, row, division):
         """
@@ -126,7 +129,7 @@ class Command(BaseCommand):
                     or (row["racetype"].startswith("Special"))
                 ),
             )
-        except:
+        except ObjectDoesNotExist:
             print(
                 "Could not find race for {} {}".format(
                     row["electiondate"].split("-")[0], office.label
@@ -176,7 +179,7 @@ class Command(BaseCommand):
                 race=race,
                 party=party,
             )
-        except:
+        except ObjectDoesNotExist:
             print(
                 "Could not find election for {0} {1} {2}".format(
                     race, row["party"], row["last"]
