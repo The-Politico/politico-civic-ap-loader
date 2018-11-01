@@ -6,8 +6,13 @@ from time import sleep
 from tqdm import tqdm
 
 from almanac.models import ElectionEvent
-from aploader.celery import (bake_bop, bake_notifications, call_race_in_slack,
-                             call_race_in_slackchat, call_race_on_twitter)
+from aploader.celery import (
+    bake_bop,
+    bake_notifications,
+    call_race_in_slack,
+    call_race_in_slackchat,
+    call_race_on_twitter,
+)
 from aploader.conf import settings as app_settings
 from aploader.models import APElectionMeta, ChamberCall
 from django.core.exceptions import ObjectDoesNotExist
@@ -16,8 +21,10 @@ from election.models import CandidateElection
 from geography.models import Division, DivisionLevel
 from vote.models import Votes
 
-from .utils.notifications.formatters import (format_office_label,
-                                             short_format_office_label)
+from .utils.notifications.formatters import (
+    format_office_label,
+    short_format_office_label,
+)
 
 
 class Command(BaseCommand):
@@ -292,15 +299,11 @@ class Command(BaseCommand):
                     "special_election": "Special" in RACE_TYPE,
                     "page_url": url,
                 }
-<<<<<<< HEAD
+
                 call_race_in_slack.delay(payload)
                 call_race_in_slackchat.delay(payload)
                 call_race_on_twitter.delay(payload)
                 self.calls.append(payload)
-=======
-                # call_race_in_slack.delay(payload)
-                # call_race_on_twitter.delay(payload)
->>>>>>> master
 
         votes.update(**vote_update)
 
