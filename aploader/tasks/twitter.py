@@ -136,4 +136,5 @@ def call_race_on_twitter(payload):
 
         api.PostUpdate(status=status, media=[media_id])
     except Exception:
+        print("BOTSHOT ERROR", Exception)
         api.PostUpdate(status=status)

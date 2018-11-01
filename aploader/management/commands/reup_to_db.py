@@ -8,7 +8,6 @@ from tqdm import tqdm
 from almanac.models import ElectionEvent
 from aploader.celery import (
     bake_bop,
-    bake_notifications,
     call_race_in_slack,
     call_race_in_slackchat,
     call_race_on_twitter,
@@ -303,7 +302,6 @@ class Command(BaseCommand):
                 call_race_in_slack.delay(payload)
                 call_race_in_slackchat.delay(payload)
                 call_race_on_twitter.delay(payload)
-                self.calls.append(payload)
 
         votes.update(**vote_update)
 
