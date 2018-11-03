@@ -3,10 +3,11 @@ from argparse import Namespace
 from urllib.parse import urlencode
 
 import requests
-
 import twitter
 from celery import shared_task
 from django.conf import settings
+
+from aploader.models import APElectionMeta
 
 CONSUMER_KEY = getattr(settings, "CIVIC_TWITTER_CONSUMER_KEY", None)
 CONSUMER_SECRET = getattr(settings, "CIVIC_TWITTER_CONSUMER_SECRET", None)
@@ -102,9 +103,32 @@ def construct_status(
     )
 
 
+def format_party(party):
+    lp = party.lower()
+    if lp == "gop":
+        return "R"
+    if lp == "dem":
+        return "D"
+    return "I"
+
+
 @shared_task
 def call_race_on_twitter(payload):
     payload = Namespace(**payload)
+
+    ap_meta = APElectionMeta.objects.filter(
+        ap_election_id=payload.race_id
+    ).first()
+
+    # Get race rating
+    race_rating = ap_meta.election.race.ratings.latest("created_date")
+    rating_code = race_rating.category.order
+    noncompetitive = False
+    # Skip races that were solid and called correctly
+    if rating_code == 1 and format_party(payload.candidate_party) == "D":
+        noncompetitive = True
+    if rating_code == 7 and format_party(payload.candidate_party) == "R":
+        noncompetitive = True
 
     status = construct_status(
         payload.primary_party,
@@ -126,6 +150,9 @@ def call_race_on_twitter(payload):
         access_token_secret=ACCESS_TOKEN_SECRET,
     )
 
+    if noncompetitive:
+        api.PostUpdate(status=status)
+        return
     try:
         get_screenshot(payload.race_id, payload.page_url)
 
