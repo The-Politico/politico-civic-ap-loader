@@ -58,9 +58,9 @@ class Command(BaseCommand):
                 iteration_speed = math.ceil(10 / interval)
                 interval = 10
 
-            if interval <= 30 and self.level == "county":
+            if interval <= 40 and self.level == "county":
                 iteration_speed = math.ceil(30 / interval)
-                interval = 30
+                interval = 40
 
         else:
             interval = app_settings.RESULTS_DAEMON_INTERVAL
