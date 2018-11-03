@@ -3,27 +3,21 @@ import sys
 from datetime import datetime
 from time import sleep
 
-from tqdm import tqdm
-
-from almanac.models import ElectionEvent
-from aploader.celery import (
-    bake_bop,
-    call_race_in_slack,
-    call_race_in_slackchat,
-    call_race_on_twitter,
-)
-from aploader.conf import settings as app_settings
-from aploader.models import APElectionMeta, ChamberCall
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 from election.models import CandidateElection
 from geography.models import Division, DivisionLevel
+from tqdm import tqdm
+
+from almanac.models import ElectionEvent
+from aploader.celery import (bake_bop, call_race_in_slack,
+                             call_race_in_slackchat, call_race_on_twitter)
+from aploader.conf import settings as app_settings
+from aploader.models import APElectionMeta, ChamberCall
 from vote.models import Votes
 
-from .utils.notifications.formatters import (
-    format_office_label,
-    short_format_office_label,
-)
+from .utils.notifications.formatters import (format_office_label,
+                                             short_format_office_label)
 
 
 class Command(BaseCommand):
@@ -287,6 +281,7 @@ class Command(BaseCommand):
                     "candidate": "{} {}".format(
                         candidate.person.first_name, candidate.person.last_name
                     ),
+                    "election_date": ELEX_ELECTION_DATE,
                     "candidate_party": candidate.party.ap_code,
                     "primary_party": PRIMARY_PARTY,
                     "vote_percent": VOTE_PERCENT,
