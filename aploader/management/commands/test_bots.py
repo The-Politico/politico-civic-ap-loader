@@ -1,6 +1,7 @@
+from django.core.management.base import BaseCommand
+
 from aploader.celery import (call_race_in_slack, call_race_in_slackchat,
                              call_race_on_twitter)
-from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -18,6 +19,7 @@ class Command(BaseCommand):
             "office_short": "Texas Senate",
             "candidate": "Beto O'Rourke",
             "candidate_party": "Dem",
+            "election_date": "2018-11-06",
             "primary_party": None,
             "vote_percent": 0.51,
             "vote_count": 95647,

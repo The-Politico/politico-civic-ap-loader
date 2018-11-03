@@ -1,9 +1,10 @@
 from argparse import Namespace
 
-from aploader.models import APElectionMeta
 from celery import shared_task
 from django.conf import settings
 from slackclient import SlackClient
+
+from aploader.models import APElectionMeta
 
 SLACK_BOT_TOKEN = getattr(settings, "CIVIC_SLACK_BOT_TOKEN", None)
 
@@ -36,9 +37,10 @@ def call_race_in_slackchat(payload):
     if payload.runoff:
         return
 
-    ap_meta = APElectionMeta.objects.filter(
-        ap_election_id=payload.race_id
-    ).first()
+    ap_meta = APElectionMeta.objects.get(
+        ap_election_id=payload.race_id,
+        election__election_day__slug=payload.election_date,
+    )
 
     # Get race rating
     race_rating = ap_meta.election.race.ratings.latest("created_date")
@@ -55,7 +57,7 @@ def call_race_in_slackchat(payload):
     bot_channel = getattr(
         settings, "CIVIC_SLACKCHAT_CHANNEL_NAME", "slackchat-elex-test"
     )
-    text = "RACE CALL\n*{}*\nCalled for {} |({})| |{}|".format(
+    text = "RACE CALL\n*{}*\nCalled for {} |({})| |`{}`|".format(
         payload.office_short,
         payload.candidate,
         format_party(payload.candidate_party),

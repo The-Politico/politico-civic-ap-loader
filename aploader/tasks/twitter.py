@@ -116,9 +116,10 @@ def format_party(party):
 def call_race_on_twitter(payload):
     payload = Namespace(**payload)
 
-    ap_meta = APElectionMeta.objects.filter(
-        ap_election_id=payload.race_id
-    ).first()
+    ap_meta = APElectionMeta.objects.get(
+        ap_election_id=payload.race_id,
+        election__election_day__slug=payload.election_date
+    )
 
     # Get race rating
     race_rating = ap_meta.election.race.ratings.latest("created_date")
