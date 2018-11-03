@@ -57,7 +57,7 @@ def call_race_in_slackchat(payload):
     bot_channel = getattr(
         settings, "CIVIC_SLACKCHAT_CHANNEL_NAME", "slackchat-elex-test"
     )
-    text = "RACE CALL\n*{}*\nCalled for {} |({})| |`{}`|".format(
+    text = "RACE CALL\n*{}*\nCalled for {} |({})| | `{}` |".format(
         payload.office_short,
         payload.candidate,
         format_party(payload.candidate_party),
