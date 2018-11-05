@@ -153,3 +153,4 @@ tmp/
 static_results
 example/*.json
 example/*.csv
+example/images

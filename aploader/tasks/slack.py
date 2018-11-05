@@ -3,6 +3,7 @@ from argparse import Namespace
 
 from aploader.conf import settings as app_settings
 from celery import shared_task
+from decimal import Decimal
 from django.conf import settings
 from slacker import Slacker
 
@@ -28,6 +29,10 @@ def call_race_in_slack(payload):
             payload.candidate, payload.candidate_party
         )
 
+    payload.vote_percent = Decimal(payload.vote_percent)
+    payload.precincts_reporting_percent = Decimal(
+        payload.precincts_reporting_percent
+    )
     bot_attachment_data = [
         {
             "fallback": "🚨 Race called in *{}*".format(
