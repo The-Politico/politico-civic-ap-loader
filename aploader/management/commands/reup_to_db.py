@@ -48,6 +48,7 @@ class Command(BaseCommand):
             last_election_year = "2016"
         elif race.office.body.slug == "senate" and not race.special:
             last_election_year = "2012"
+        # all specials this year are class 2
         elif race.office.body.slug == "senate" and race.special:
             last_election_year = "2014"
 
@@ -78,16 +79,35 @@ class Command(BaseCommand):
         if gop["votes"] > dem["votes"]:
             return "gop"
 
-    def calculate_undecideds(self):
+    def bop_calculations(self):
         house = self.bop["house"]
+        house_win_threshold = 218
+
         house["undecided"] = 435 - (
-            house["dem"]["total"] + house["gop"]["total"]
+            house["dem"]["total"] + house["gop"]["total"] + house["other"]["total"]
         )
+        house["dem"]["net"] = house["dem"]["flips"] - house["gop"]["flips"]
+        house["gop"]["net"] = house["gop"]["flips"] - house["dem"]["flips"]
+
+        if house["dem"]["total"] >= house_win_threshold:
+            house["call"] = "dem"
+
+        if house["gop"]["total"] >= house_win_threshold:
+            house["call"] = "gop"
 
         senate = self.bop["senate"]
+
         senate["undecided"] = 100 - (
-            senate["dem"]["total"] + senate["gop"]["total"]
+            senate["dem"]["total"] + senate["gop"]["total"] + senate["other"]["total"]
         )
+        senate["dem"]["net"] = senate["dem"]["flips"] - senate["gop"]["flips"]
+        senate["gop"]["net"] = senate["gop"]["flips"] - senate["dem"]["flips"]
+
+        if senate["dem"]["total"] >= 51:
+            senate["call"] = "dem"
+
+        if senate["gop"]["total"] >= 50:
+            senate["call"] = "gop"
 
     def get_chamber_call(self, body):
         chamber_call = ChamberCall.objects.get(body__slug=body)
@@ -310,7 +330,7 @@ class Command(BaseCommand):
         if not PARTY:
             return
 
-        if WINNER:
+        if (WINNER and not ap_meta.override_ap_call) or votes.first().winning:
             party_slug = PARTY.lower()
             incumbent = self.get_current_party(ap_meta.election.race)
 
@@ -343,14 +363,14 @@ class Command(BaseCommand):
                     "gop": {"total": 0, "flips": 0},
                     "other": {"total": 0},
                     "undecided": 0,
-                    "call": self.get_chamber_call("house"),
+                    "projected": self.get_chamber_call("house"),
                 },
                 "senate": {
                     "dem": {"total": 23, "flips": 0},
                     "gop": {"total": 42, "flips": 0},
                     "other": {"total": 0},
                     "undecided": 0,
-                    "call": self.get_chamber_call("senate"),
+                    "projected": self.get_chamber_call("senate"),
                 },
             }
 
@@ -359,7 +379,7 @@ class Command(BaseCommand):
                     result, TABULATED, NO_BOTS, PASSED_ELECTION_DATE
                 )
 
-            self.calculate_undecideds()
+            self.bop_calculations()
 
             print(self.bop)
             bake_bop(self.bop)
