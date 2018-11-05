@@ -10,7 +10,7 @@ logger = logging.getLogger("tasks")
 
 @shared_task(acks_late=True)
 def bake_bop(bop):
-    key = "election-results/2018/bop.json"
+    key = "election-results/2018/balance-of-power.json"
     bucket = get_bucket()
     bucket.put_object(
         Key=key,
