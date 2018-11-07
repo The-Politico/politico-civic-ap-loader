@@ -46,6 +46,15 @@ PENNSYLVANIA_INCUMBENCY_MAP = {
     "18": "dem",
 }
 
+LOUISIANA_INCUMBENCY_MAP = {
+    "01": "gop",
+    "02": "dem",
+    "03": "gop",
+    "04": "gop",
+    "05": "gop",
+    "06": "gop",
+}
+
 
 class Command(BaseCommand):
     help = (
@@ -74,6 +83,9 @@ class Command(BaseCommand):
         if race.office.body.slug == "house":
             if race.office.division.parent.slug == "pennsylvania":
                 return PENNSYLVANIA_INCUMBENCY_MAP[race.office.division.code]
+
+            if race.office.division.parent.slug == "louisiana":
+                return LOUISIANA_INCUMBENCY_MAP[race.office.division.code]
 
             last_election_year = "2016"
         elif race.office.body.slug == "senate" and not race.special:
