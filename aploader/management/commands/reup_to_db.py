@@ -10,14 +10,41 @@ from geography.models import Division, DivisionLevel
 from tqdm import tqdm
 
 from almanac.models import ElectionEvent
-from aploader.celery import (bake_bop, call_race_in_slack,
-                             call_race_in_slackchat, call_race_on_twitter)
+from aploader.celery import (
+    bake_bop,
+    call_race_in_slack,
+    call_race_in_slackchat,
+    call_race_on_twitter,
+)
 from aploader.conf import settings as app_settings
 from aploader.models import APElectionMeta, ChamberCall
 from vote.models import Votes
 
-from .utils.notifications.formatters import (format_office_label,
-                                             short_format_office_label)
+from .utils.notifications.formatters import (
+    format_office_label,
+    short_format_office_label,
+)
+
+PENNSYLVANIA_INCUMBENCY_MAP = {
+    "01": "gop",
+    "02": "dem",
+    "03": "dem",
+    "04": "dem",
+    "05": "gop",
+    "06": "gop",
+    "07": "gop",
+    "08": "dem",
+    "09": "gop",
+    "10": "gop",
+    "11": "gop",
+    "12": "gop",
+    "13": "gop",
+    "14": "dem",
+    "15": "gop",
+    "16": "gop",
+    "17": "gop",
+    "18": "dem",
+}
 
 
 class Command(BaseCommand):
@@ -45,6 +72,9 @@ class Command(BaseCommand):
             return None
 
         if race.office.body.slug == "house":
+            if race.office.division.parent.slug == "pennsylvania":
+                return PENNSYLVANIA_INCUMBENCY_MAP[race.office.division.code]
+
             last_election_year = "2016"
         elif race.office.body.slug == "senate" and not race.special:
             last_election_year = "2012"
@@ -84,7 +114,9 @@ class Command(BaseCommand):
         house_win_threshold = 218
 
         house["undecided"] = 435 - (
-            house["dem"]["total"] + house["gop"]["total"] + house["other"]["total"]
+            house["dem"]["total"]
+            + house["gop"]["total"]
+            + house["other"]["total"]
         )
         house["dem"]["net"] = house["dem"]["flips"] - house["gop"]["flips"]
         house["gop"]["net"] = house["gop"]["flips"] - house["dem"]["flips"]
@@ -98,7 +130,9 @@ class Command(BaseCommand):
         senate = self.bop["senate"]
 
         senate["undecided"] = 100 - (
-            senate["dem"]["total"] + senate["gop"]["total"] + senate["other"]["total"]
+            senate["dem"]["total"]
+            + senate["gop"]["total"]
+            + senate["other"]["total"]
         )
         senate["dem"]["net"] = senate["dem"]["flips"] - senate["gop"]["flips"]
         senate["gop"]["net"] = senate["gop"]["flips"] - senate["dem"]["flips"]
@@ -314,9 +348,9 @@ class Command(BaseCommand):
                     "page_url": url,
                 }
 
-                call_race_in_slack.delay(payload)
-                call_race_in_slackchat.delay(payload)
-                call_race_on_twitter.delay(payload)
+                # call_race_in_slack.delay(payload)
+                # call_race_in_slackchat.delay(payload)
+                # call_race_on_twitter.delay(payload)
 
         votes.update(**vote_update)
 
@@ -345,6 +379,8 @@ class Command(BaseCommand):
             else:
                 bop_body[party_slug]["total"] += 1
                 if party_slug != incumbent:
+                    print(result, votes.first().winning)
+                    print(LAST_NAME, candidate.race.office)
                     bop_body[party_slug]["flips"] += 1
 
     def main(self, options):
