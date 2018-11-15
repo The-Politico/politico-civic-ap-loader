@@ -14,9 +14,8 @@ djangorestframework = "*"
 dj-database-url = "*"
 "psycopg2" = "*"
 aploader = {path = "./..", editable = true}
-politico-civic-ap-loader = {editable = true, path = "./.."}
-politico-civic-election = "*"
-politico-civic-government = "*"
+politico-civic-election = "==0.3.0"
+politico-civic-government = "==0.1.4"
 politico-civic-race-ratings = "*"
 politico-civic-vote = "*"
 elex = "*"
@@ -25,5 +24,6 @@ python-twitter = "*"
 slackclient = "*"
 openpyxl = "*"
 csvkit = "*"
+celery = "*"
 
 [dev-packages]

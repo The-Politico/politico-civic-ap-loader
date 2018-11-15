@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="politico-civic-ap-loader",
-    version="0.5.0",
+    version="0.5.1",
     description="",
     url="https://github.com/The-Politico/politico-civic-ap-loader",
     author="POLITICO interactive news",
@@ -24,6 +24,18 @@ setup(
     keywords="",
     packages=find_packages(exclude=["docs", "tests", "example"]),
     include_package_data=True,
-    install_requires=["slacker", "slackclient"],
+    install_requires=[
+        "django",
+        "djangorestframework",
+        "dj-database-url",
+        "psycopg2",
+        "politico-civic-entity",
+        "politico-civic-geography",
+        "politico-civic-government",
+        "politico-civic-election",
+        "politico-civic-vote",
+        "slacker",
+        "slackclient",
+    ],
     extras_require={"test": ["pytest"]},
 )
