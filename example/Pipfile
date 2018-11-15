@@ -16,10 +16,9 @@ dj-database-url = "*"
 aploader = {path = "./..", editable = true}
 politico-civic-ap-loader = {editable = true, path = "./.."}
 politico-civic-election = "*"
-politico-civic-government = "==0.1.2"
+politico-civic-government = "*"
 politico-civic-race-ratings = "*"
 politico-civic-vote = "*"
-politico-civic-almanac = "*"
 elex = "*"
 slacker = "*"
 python-twitter = "*"
