@@ -1,15 +1,12 @@
 import json
 import sys
-from datetime import datetime
-from time import sleep
 
+from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
-from election.models import CandidateElection
-from geography.models import Division, DivisionLevel
+from time import sleep
 from tqdm import tqdm
 
-from almanac.models import ElectionEvent
 from aploader.celery import (
     bake_bop,
     call_race_in_slack,
@@ -18,6 +15,8 @@ from aploader.celery import (
 )
 from aploader.conf import settings as app_settings
 from aploader.models import APElectionMeta, ChamberCall
+from election.models import CandidateElection, ElectionEvent
+from geography.models import Division, DivisionLevel
 from vote.models import Votes
 
 from .utils.notifications.formatters import (
@@ -360,9 +359,9 @@ class Command(BaseCommand):
                     "page_url": url,
                 }
 
-                # call_race_in_slack.delay(payload)
-                # call_race_in_slackchat.delay(payload)
-                # call_race_on_twitter.delay(payload)
+                call_race_in_slack.delay(payload)
+                call_race_in_slackchat.delay(payload)
+                call_race_on_twitter.delay(payload)
 
         votes.update(**vote_update)
 
