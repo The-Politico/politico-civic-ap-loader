@@ -6,7 +6,7 @@ Get live results from the AP Elections API, the POLITICO way.
 
 ### Quick disclaimer
 
-This app is tailored to how POLITICO publishes election results, which might make it less plug-and-play than the rest of the POLITICO Civic project. The live results script filters down the AP Elections API response to just vote tallies and identifiers, due to how POLITICO publishes election results. It also assumes a directory structure when putting results onto Amazon S3. 
+This app is tailored to how POLITICO publishes election results, which might make it less plug-and-play than the rest of the POLITICO Civic project. The live results script filters down the AP Elections API response to just vote tallies and identifiers, due to how POLITICO publishes election results. It also assumes a directory structure when putting results onto Amazon S3.
 
 ### Quickstart
 
