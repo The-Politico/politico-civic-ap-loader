@@ -83,7 +83,7 @@ class Command(BaseCommand):
 
                 subprocess.run(script_args)
                 sleep(2)
-                subprocess.run(deploy_script_args)
+                # subprocess.run(deploy_script_args)
 
             if run_once:
                 print("run once specified, exiting")

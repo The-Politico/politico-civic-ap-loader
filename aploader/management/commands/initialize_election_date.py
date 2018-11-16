@@ -77,7 +77,7 @@ class Command(BaseCommand):
             )
         elif row["officename"] == "U.S. Senate":
             body = government.Body.objects.get(label="U.S. Senate")
-            if row["seatnum"] == "2":
+            if row["seatnum"] == "2" or "Class II" in row["description"]:
                 senate_class = 2
             else:
                 senate_class = self.senate_class
@@ -126,6 +126,10 @@ class Command(BaseCommand):
                 cycle__name=row["electiondate"].split("-")[0],
                 special=(
                     (row["seatnum"] == ("2") and office.body.slug == "senate")
+                    or (
+                        "Class II" in row["description"]
+                        and office.body.slug == "senate"
+                    )
                     or (row["racetype"].startswith("Special"))
                 ),
             )

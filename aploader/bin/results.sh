@@ -57,7 +57,7 @@ def relevantContentOnly:
   { fipscode, level, officeid, party, polid, polnum, precinctsreporting, precinctsreportingpct, precinctstotal, raceid, runoff, seatnum, statepostal, votecount, votepct, winner };
 
 if (.level != $level) then empty else (
-  [.statename, .officeid, (relevantContentOnly | tojson)] | @tsv
+  [.statename, .officeid, .racetype, (relevantContentOnly | tojson)] | @tsv
 ) end
 '
 
@@ -65,7 +65,7 @@ if (.level != $level) then empty else (
 declare -A out_fds=( )
 
 # Read state / office / line-of-data tuples from our JQ script...
-while IFS=$'\t' read -r state office data; do
+while IFS=$'\t' read -r state office racetype data; do
   if [ $office == 'G' ]; then
     officename='governor'
   elif [ $office == 'H' ]; then
@@ -76,38 +76,51 @@ while IFS=$'\t' read -r state office data; do
     continue
   fi
 
-  # If we don't already have a writer for the current state, start one.
-  if [[ ! ${out_fds[$state]} ]]; then
-    slug="$(echo -n "${state}" | sed -e 's/[^[:alnum:]]/-/g' \
-    | tr -s '-' | tr A-Z a-z)"
+  if [ "$racetype" == "General Election Runoff" ]; then
+    if [[ ! ${out_fds[$state]} ]]; then
+      slug="$(echo -n "${state}" | sed -e 's/[^[:alnum:]]/-/g' \
+      | tr -s '-' | tr A-Z a-z)"
 
-    mkdir -p $OUTPUT/election-results/$results_filter/$slug
-    exec {new_fd}> >(jq -n '[inputs]' >"$OUTPUT/election-results/$results_filter/$slug/$filename.json")
+      mkdir -p $OUTPUT/election-results/$results_filter/$slug/runoff
+      exec {new_fd}> >(jq -n '[inputs]' >"$OUTPUT/election-results/$results_filter/$slug/runoff/$filename.json")
 
-    out_fds[$state]=$new_fd
+      out_fds[$state]=$new_fd
+    fi
+    printf '%s\n' "$data" >&${out_fds[$state]}
+  else
+    # If we don't already have a writer for the current state, start one.
+    if [[ ! ${out_fds[$state]} ]]; then
+      slug="$(echo -n "${state}" | sed -e 's/[^[:alnum:]]/-/g' \
+      | tr -s '-' | tr A-Z a-z)"
+
+      mkdir -p $OUTPUT/election-results/$results_filter/$slug
+      exec {new_fd}> >(jq -n '[inputs]' >"$OUTPUT/election-results/$results_filter/$slug/$filename.json")
+
+      out_fds[$state]=$new_fd
+    fi
+    # If we don't already have a writer for the current office, start one.
+    if [[ ! ${out_fds[$officename]} ]]; then
+      mkdir -p $OUTPUT/election-results/$results_filter/$officename
+      exec {new_fd}> >(jq -n '[inputs]' >"$OUTPUT/election-results/$results_filter/$officename/$filename.json")
+
+      out_fds[$officename]=$new_fd
+    fi
+    # If we don't already have a writer for the current state office, start one.
+    if [[ ! ${out_fds[${state}-${officename}]} ]]; then
+      stateslug="$(echo -n "${state}" | sed -e 's/[^[:alnum:]]/-/g' \
+      | tr -s '-' | tr A-Z a-z)"
+
+      mkdir -p $OUTPUT/election-results/$results_filter/$stateslug/$officename
+      exec {new_fd}> >(jq -n '[inputs]' >"$OUTPUT/election-results/$results_filter/$stateslug/$officename/$filename.json")
+
+      out_fds[${state}-${officename}]=$new_fd
+    fi
+
+    # Regardless, send the data to the FDs we have for this row
+    printf '%s\n' "$data" >&${out_fds[$state]}
+    printf '%s\n' "$data" >&${out_fds[$officename]}
+    printf '%s\n' "$data" >&${out_fds[${state}-${officename}]}
   fi
-  # If we don't already have a writer for the current office, start one.
-  if [[ ! ${out_fds[$officename]} ]]; then
-    mkdir -p $OUTPUT/election-results/$results_filter/$officename
-    exec {new_fd}> >(jq -n '[inputs]' >"$OUTPUT/election-results/$results_filter/$officename/$filename.json")
-
-    out_fds[$officename]=$new_fd
-  fi
-  # If we don't already have a writer for the current state office, start one.
-  if [[ ! ${out_fds[${state}-${officename}]} ]]; then
-    stateslug="$(echo -n "${state}" | sed -e 's/[^[:alnum:]]/-/g' \
-    | tr -s '-' | tr A-Z a-z)"
-
-    mkdir -p $OUTPUT/election-results/$results_filter/$stateslug/$officename
-    exec {new_fd}> >(jq -n '[inputs]' >"$OUTPUT/election-results/$results_filter/$stateslug/$officename/$filename.json")
-
-    out_fds[${state}-${officename}]=$new_fd
-  fi
-
-  # Regardless, send the data to the FDs we have for this row
-  printf '%s\n' "$data" >&${out_fds[$state]}
-  printf '%s\n' "$data" >&${out_fds[$officename]}
-  printf '%s\n' "$data" >&${out_fds[${state}-${officename}]}
 done < <(cat "$input_file" | jq -cn --stream 'fromstream(1|truncate_stream(inputs))' | jq -cr "$jq_split_script" --arg level $results_filter)
 
 # close output FDs, so the JQ instances all flush
