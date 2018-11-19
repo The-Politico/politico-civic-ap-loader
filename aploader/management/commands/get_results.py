@@ -66,10 +66,10 @@ class Command(BaseCommand):
             interval = app_settings.RESULTS_DAEMON_INTERVAL
 
         while True:
-            logger.info("running while loop")
             now = time()
 
             if (now - results_start) > interval:
+                logger.info("running while loop")
                 results_start = now
 
                 if self.replay:
@@ -83,7 +83,7 @@ class Command(BaseCommand):
 
                 subprocess.run(script_args)
                 sleep(2)
-                # subprocess.run(deploy_script_args)
+                subprocess.run(deploy_script_args)
 
             if run_once:
                 print("run once specified, exiting")

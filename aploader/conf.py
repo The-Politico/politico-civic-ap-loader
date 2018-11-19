@@ -49,7 +49,7 @@ Settings.RESULTS_STATIC_DIR = getattr(
 )
 
 Settings.RESULTS_DAEMON_INTERVAL = getattr(
-    project_settings, "APLOADER_RESULTS_DAEMON_INTERVAL", 10
+    project_settings, "APLOADER_RESULTS_DAEMON_INTERVAL", 20
 )
 
 Settings.DATABASE_UPLOAD_DAEMON_INTERVAL = getattr(
