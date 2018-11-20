@@ -426,10 +426,10 @@ class Command(BaseCommand):
                     result, TABULATED, NO_BOTS, PASSED_ELECTION_DATE
                 )
 
-            self.bop_calculations()
+            # self.bop_calculations()
 
-            print(self.bop)
-            bake_bop(self.bop)
+            # print(self.bop)
+            # bake_bop(self.bop)
 
             if RUN_ONCE:
                 print("Run once specified, exiting.")
