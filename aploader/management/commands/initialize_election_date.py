@@ -127,7 +127,8 @@ class Command(BaseCommand):
                 special=(
                     (row["seatnum"] == ("2") and office.body.slug == "senate")
                     or (
-                        "Class II" in row["description"]
+                        # AP has inconsistent data for senate specials for 2018-11-06
+                        "Class II" in row.get("description", "")
                         and office.body.slug == "senate"
                     )
                     or (row["racetype"].startswith("Special"))
